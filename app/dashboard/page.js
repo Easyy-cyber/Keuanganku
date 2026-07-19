@@ -103,7 +103,7 @@ export default function DashboardPage() {
     }
   }, [])
 
-  useEffect(() => {
+    useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) { router.push('/auth'); return }
       setUser(session.user)
@@ -117,7 +117,13 @@ export default function DashboardPage() {
       }
       if (!session) router.push('/auth')
     })
-    return () => subscription.unsubscribe()
+
+    window.addEventListener('focus', loadData)
+
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('focus', loadData)
+    }
   }, [loadData])
 
   /* CRUD Transaksi */
@@ -127,6 +133,7 @@ export default function DashboardPage() {
       const data = await apiFetch('/api/transactions', 'POST', { amount, category, description, date })
       if (data && !data.error) {
         setTxs(prev => [data, ...prev])
+        router.refresh()
         return data.date.slice(0, 7)
       }
     } catch (err) {
