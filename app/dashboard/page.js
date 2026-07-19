@@ -93,10 +93,14 @@ export default function DashboardPage() {
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        setUser(session.user)
+        loadData()
+      }
       if (!session) router.push('/auth')
     })
     return () => subscription.unsubscribe()
-  }, [])
+  }, [loadData])
 
   const loadData = useCallback(async () => {
     setLoading(true)

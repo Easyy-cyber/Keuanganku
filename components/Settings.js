@@ -159,7 +159,7 @@ export default function Settings({ txs, budgets, onRestore, onLogout, userEmail 
         </Section>
 
         <p style={{ textAlign: 'center', fontSize: 11, color: D.textMuted, marginTop: 8, lineHeight: 1.7 }}>
-          Keuanganku v4.0 · Fullstack · Data tersimpan di Supabase
+          Keuanganku v2.0 · Fullstack · Data tersimpan di Supabase
         </p>
       </div>
     </div>
