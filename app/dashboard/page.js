@@ -154,11 +154,16 @@ export default function DashboardPage() {
   }
 
   const deleteAll = async () => {
-  for (const tx of txs) {
-    await apiFetch('/api/transactions', 'DELETE', { id: tx.id })
-  }
-  setTxs([])
-  setBudgets({})
+    // Hapus semua transaksi satu per satu
+    for (const tx of txs) {
+      await apiFetch('/api/transactions', 'DELETE', { id: tx.id })
+    }
+    // Hapus semua budget sekaligus
+    await apiFetch('/api/budgets', 'DELETE')
+    
+    // Reset state
+    setTxs([])
+    setBudgets({})
   }
 
   /* Budget */
