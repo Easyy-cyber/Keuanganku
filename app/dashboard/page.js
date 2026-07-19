@@ -87,6 +87,17 @@ export default function DashboardPage() {
   const [loading,  setLoading]  = useState(true)
 
   /* Auth check */
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    const [txData, budgetData] = await Promise.all([
+      apiFetch('/api/transactions'),
+      apiFetch('/api/budgets'),
+    ])
+    if (Array.isArray(txData)) setTxs(txData)
+    if (budgetData && !budgetData.error) setBudgets(budgetData)
+    setLoading(false)
+  }, [])
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) { router.push('/auth'); return }
@@ -103,17 +114,6 @@ export default function DashboardPage() {
     })
     return () => subscription.unsubscribe()
   }, [loadData])
-
-  const loadData = useCallback(async () => {
-    setLoading(true)
-    const [txData, budgetData] = await Promise.all([
-      apiFetch('/api/transactions'),
-      apiFetch('/api/budgets'),
-    ])
-    if (Array.isArray(txData)) setTxs(txData)
-    if (budgetData && !budgetData.error) setBudgets(budgetData)
-    setLoading(false)
-  }, [])
 
   /* CRUD Transaksi */
   const addTx = async ({ amount, category, description }) => {
