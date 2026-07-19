@@ -88,14 +88,19 @@ export default function DashboardPage() {
 
   /* Auth check */
   const loadData = useCallback(async () => {
-    setLoading(true)
-    const [txData, budgetData] = await Promise.all([
-      apiFetch('/api/transactions'),
-      apiFetch('/api/budgets'),
-    ])
-    if (Array.isArray(txData)) setTxs(txData)
-    if (budgetData && !budgetData.error) setBudgets(budgetData)
-    setLoading(false)
+    try {
+      setLoading(true)
+      const [txData, budgetData] = await Promise.all([
+        apiFetch('/api/transactions'),
+        apiFetch('/api/budgets'),
+      ])
+      if (Array.isArray(txData)) setTxs(txData)
+      if (budgetData && !budgetData.error) setBudgets(budgetData)
+    } catch (err) {
+      console.error('loadData error:', err)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -117,11 +122,15 @@ export default function DashboardPage() {
 
   /* CRUD Transaksi */
   const addTx = async ({ amount, category, description }) => {
-    const date = new Date().toISOString()
-    const data = await apiFetch('/api/transactions', 'POST', { amount, category, description, date })
-    if (data && !data.error) {
-      setTxs(prev => [data, ...prev])
-      return data.date.slice(0, 7)
+    try {
+      const date = new Date().toISOString()
+      const data = await apiFetch('/api/transactions', 'POST', { amount, category, description, date })
+      if (data && !data.error) {
+        setTxs(prev => [data, ...prev])
+        return data.date.slice(0, 7)
+      }
+    } catch (err) {
+      console.error('addTx error:', err)
     }
   }
 
