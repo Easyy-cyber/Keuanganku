@@ -427,10 +427,14 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx }) {
   };
 
   const handleSave = async (data) => {
-    if (mode === "edit" && editTx) { updateTx(editTx.id, data); }
-    else { const ym = addTx(data); setMonth(ym); }
-    closeForm();
-  };
+    if (mode === "edit" && editTx) {
+      await updateTx(editTx.id, data)
+    } else {
+      const ym = await addTx(data)
+      if (ym) setMonth(ym)
+    }
+    closeForm()
+}
 
   const months   = [...new Set([nowYM(), ...txs.map(t => getYM(t.date))])].sort((a, b) => b.localeCompare(a));
   const filtered = txs.filter(t => getYM(t.date) === month);
