@@ -2,13 +2,13 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import Dashboard  from '@/components/Dashboard'
-import Analytics  from '@/components/Analytics'
-import Budget     from '@/components/Budget'
-import Settings   from '@/components/Settings'
+import Dashboard from '@/components/Dashboard'
+import Analytics from '@/components/Analytics'
+import Budget    from '@/components/Budget'
+import Settings  from '@/components/Settings'
 
 const D = {
   bg:       '#0D0F1A',
@@ -24,7 +24,6 @@ const D = {
   accentDim:'#1E2148',
 }
 
-/* ─── API Helper ─── */
 async function apiFetch(path, method = 'GET', body = null) {
   const { data: { session } } = await supabase.auth.getSession()
   const token = session?.access_token
@@ -39,7 +38,6 @@ async function apiFetch(path, method = 'GET', body = null) {
   return res.json()
 }
 
-/* ─── Bottom Navigation ─── */
 function BottomNav({ page, setPage }) {
   const items = [
     { id: 'dashboard', icon: 'ti-home-2',    label: 'Beranda'    },
@@ -77,16 +75,15 @@ function BottomNav({ page, setPage }) {
   )
 }
 
-/* ─── Dashboard Page ─── */
 export default function DashboardPage() {
-  const router  = useRouter()
-  const [user,     setUser]     = useState(null)
-  const [txs,      setTxs]      = useState([])
-  const [budgets,  setBudgets]  = useState({})
-  const [page,     setPage]     = useState('dashboard')
-  const [loading,  setLoading]  = useState(true)
+  const router             = useRouter()
+  const [user,    setUser]    = useState(null)
+  const [txs,     setTxs]     = useState([])
+  const [budgets, setBudgets] = useState({})
+  const [page,    setPage]    = useState('dashboard')
+  const [loading, setLoading] = useState(true)
+  const hasFetched = useRef(false)  // ← kunci: hanya fetch sekali
 
-  /* Auth check */
   const loadData = useCallback(async () => {
     try {
       setLoading(true)
@@ -103,28 +100,27 @@ export default function DashboardPage() {
     }
   }, [])
 
-    useEffect(() => {
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) { router.push('/auth'); return }
       setUser(session.user)
-      loadData()
+      if (!hasFetched.current) {
+        hasFetched.current = true
+        loadData()
+      }
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
+      if (event === 'SIGNED_IN' && !hasFetched.current) {
+        hasFetched.current = true
         setUser(session.user)
         loadData()
       }
       if (!session) router.push('/auth')
     })
 
-    window.addEventListener('focus', loadData)
-
-    return () => {
-      subscription.unsubscribe()
-      window.removeEventListener('focus', loadData)
-    }
-  }, [loadData])
+    return () => subscription.unsubscribe()
+  }, [loadData, router])
 
   /* CRUD Transaksi */
   const addTx = async ({ amount, category, description }) => {
@@ -133,7 +129,6 @@ export default function DashboardPage() {
       const data = await apiFetch('/api/transactions', 'POST', { amount, category, description, date })
       if (data && !data.error) {
         setTxs(prev => [data, ...prev])
-        router.refresh()
         return data.date.slice(0, 7)
       }
     } catch (err) {
@@ -154,28 +149,21 @@ export default function DashboardPage() {
   }
 
   const deleteAll = async () => {
-    // Hapus semua transaksi satu per satu
     for (const tx of txs) {
       await apiFetch('/api/transactions', 'DELETE', { id: tx.id })
     }
-    // Hapus semua budget sekaligus
     await apiFetch('/api/budgets', 'DELETE')
-    
-    // Reset state
     setTxs([])
     setBudgets({})
   }
 
-  /* Budget */
   const saveBudget = async (key, amount) => {
     await apiFetch('/api/budgets', 'POST', { key, amount })
     setBudgets(prev => ({ ...prev, [key]: amount }))
   }
 
-  /* Restore (Settings) */
   const handleRestore = async ({ transactions: newTxs, budgets: newBudgets }) => {
     if (newTxs) {
-      // Hapus semua dulu lalu insert ulang
       for (const tx of txs) await apiFetch('/api/transactions', 'DELETE', { id: tx.id })
       const inserted = []
       for (const tx of newTxs) {
@@ -194,7 +182,6 @@ export default function DashboardPage() {
     }
   }
 
-  /* Logout */
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/auth')
