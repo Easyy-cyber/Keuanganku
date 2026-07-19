@@ -153,6 +153,14 @@ export default function DashboardPage() {
     setTxs(prev => prev.filter(t => t.id !== id))
   }
 
+  const deleteAll = async () => {
+  for (const tx of txs) {
+    await apiFetch('/api/transactions', 'DELETE', { id: tx.id })
+  }
+  setTxs([])
+  setBudgets({})
+  }
+
   /* Budget */
   const saveBudget = async (key, amount) => {
     await apiFetch('/api/budgets', 'POST', { key, amount })
@@ -207,6 +215,7 @@ export default function DashboardPage() {
           budgets={budgets}
           onRestore={handleRestore}
           onLogout={handleLogout}
+          onDeleteAll={deleteAll}
           userEmail={user?.email}
         />
       )}

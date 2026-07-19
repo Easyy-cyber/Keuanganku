@@ -92,27 +92,35 @@ function BackupSection({ txs, budgets, onRestore }) {
 }
 
 /* ─── Danger Zone ─── */
-function DangerZone({ onLogout }) {
+function DangerZone({ onDeleteAll }) {
   const [confirm, setConfirm] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleDelete = async () => {
+    setLoading(true)
+    await onDeleteAll()
+    setLoading(false)
+    setConfirm(false)
+  }
 
   return (
     <>
       {!confirm ? (
-        <button onClick={() => setConfirm(true)} style={{ width: '100%', padding: '12px', borderRadius: 12, fontSize: 14, fontWeight: 700, background: D.outcome.dim, color: D.outcome.solid, border: `1.5px solid ${D.outcome.border}`, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <i className="ti ti-logout" style={{ fontSize: 15 }} />
-          Keluar dari Akun
+        <button onClick={() => setConfirm(true)} style={{ width:'100%', padding:'12px', borderRadius:12, fontSize:14, fontWeight:700, background:D.outcome.dim, color:D.outcome.solid, border:`1.5px solid ${D.outcome.border}`, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+          <i className="ti ti-trash" style={{ fontSize:15 }} />
+          Hapus Semua Data Transaksi
         </button>
       ) : (
-        <div style={{ background: D.outcome.dim, borderRadius: 12, padding: '14px 16px', border: `1.5px solid ${D.outcome.border}` }}>
-          <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: D.outcome.solid }}>
-            ⚠️ Yakin mau keluar?
+        <div style={{ background:D.outcome.dim, borderRadius:12, padding:'14px 16px', border:`1.5px solid ${D.outcome.border}` }}>
+          <p style={{ margin:'0 0 12px', fontSize:13, fontWeight:700, color:D.outcome.solid }}>
+            ⚠️ Yakin? Semua transaksi & budget akan terhapus permanen!
           </p>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => setConfirm(false)} style={{ flex: 1, padding: '10px', borderRadius: 10, fontSize: 13, fontWeight: 600, background: D.surfaceHi, color: D.textSec, border: `1px solid ${D.border}`, cursor: 'pointer' }}>
+          <div style={{ display:'flex', gap:8 }}>
+            <button onClick={() => setConfirm(false)} style={{ flex:1, padding:'10px', borderRadius:10, fontSize:13, fontWeight:600, background:D.surfaceHi, color:D.textSec, border:`1px solid ${D.border}`, cursor:'pointer' }}>
               Batal
             </button>
-            <button onClick={onLogout} style={{ flex: 1, padding: '10px', borderRadius: 10, fontSize: 13, fontWeight: 700, background: D.outcome.solid, color: '#fff', border: 'none', cursor: 'pointer' }}>
-              Ya, Keluar
+            <button onClick={handleDelete} disabled={loading} style={{ flex:1, padding:'10px', borderRadius:10, fontSize:13, fontWeight:700, background:D.outcome.solid, color:'#fff', border:'none', cursor:loading?'wait':'pointer' }}>
+              {loading ? 'Menghapus...' : 'Ya, Hapus Semua'}
             </button>
           </div>
         </div>
@@ -122,7 +130,7 @@ function DangerZone({ onLogout }) {
 }
 
 /* ─── Settings Page ─── */
-export default function Settings({ txs, budgets, onRestore, onLogout, userEmail }) {
+export default function Settings({ txs, budgets, onRestore, onLogout, onDeleteAll, userEmail }) {
   return (
     <div style={{ minHeight: '100vh', background: D.bg }}>
       <div style={{ background: 'rgba(13,15,26,0.9)', backdropFilter: 'blur(12px)', borderBottom: `1px solid ${D.border}`, padding: '14px 20px', position: 'sticky', top: 0, zIndex: 10 }}>
@@ -151,11 +159,21 @@ export default function Settings({ txs, budgets, onRestore, onLogout, userEmail 
           <BackupSection txs={txs} budgets={budgets} onRestore={onRestore} />
         </Section>
 
+        <Section title="Hapus Data" icon="ti-trash">
+          <p style={{ margin:'0 0 12px', fontSize:13, color:D.textMuted }}>
+            Hapus semua transaksi dan budget secara permanen. Data tidak bisa dipulihkan kecuali kamu punya backup.
+          </p>
+          <DangerZone onDeleteAll={onDeleteAll} />
+        </Section>
+
         <Section title="Sesi" icon="ti-logout">
-          <p style={{ margin: '0 0 12px', fontSize: 13, color: D.textMuted }}>
+          <p style={{ margin:'0 0 12px', fontSize:13, color:D.textMuted }}>
             Keluar dari akun ini. Data kamu tetap aman tersimpan di server.
           </p>
-          <DangerZone onLogout={onLogout} />
+          <button onClick={onLogout} style={{ width:'100%', padding:'12px', borderRadius:12, fontSize:14, fontWeight:700, background:D.outcome.dim, color:D.outcome.solid, border:`1.5px solid ${D.outcome.border}`, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+            <i className="ti ti-logout" style={{ fontSize:15 }} />
+            Keluar dari Akun
+          </button>
         </Section>
 
         <p style={{ textAlign: 'center', fontSize: 11, color: D.textMuted, marginTop: 8, lineHeight: 1.7 }}>
