@@ -37,7 +37,15 @@ export default function AuthPage() {
     if (!email || !password) { setError('Email dan password wajib diisi'); setLoading(false); return }
     if (password.length < 6) { setError('Password minimal 6 karakter'); setLoading(false); return }
 
-    const { error: err } = await supabase.auth.signUp({ email, password })
+    const { data, error: err } = await supabase.auth.signUp({ email, password })
+    
+    // Email sudah terdaftar
+    if (data?.user?.identities?.length === 0) {
+      setError('Email ini sudah terdaftar. Silakan login atau gunakan email lain.')
+      setLoading(false)
+      return
+    }
+
     if (err) { setError(err.message); setLoading(false); return }
 
     setMode('check-email')
