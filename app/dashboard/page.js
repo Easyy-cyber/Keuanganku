@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { router.push('/auth'); return }
+      if (!session) { router.replace('/auth'); return }
       setUser(session.user)
       if (!hasFetched.current) {
         hasFetched.current = true
@@ -116,7 +116,7 @@ export default function DashboardPage() {
         setUser(session.user)
         loadData()
       }
-      if (!session) router.push('/auth')
+      if (!session) router.replace('/auth')
     })
 
     return () => subscription.unsubscribe()
@@ -184,7 +184,7 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
-    router.push('/auth')
+    router.replace('/auth')
   }
 
   if (loading) return (

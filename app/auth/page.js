@@ -60,7 +60,7 @@ export default function AuthPage() {
     const { error: err } = await supabase.auth.signInWithPassword({ email, password })
     if (err) { setError('Email atau password salah'); setLoading(false); return }
 
-    router.push('/dashboard')
+    router.replace('/dashboard')
     setLoading(false)
   }
 
