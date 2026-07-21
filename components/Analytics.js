@@ -1,6 +1,7 @@
 'use client'
 import { useState } from "react";
-import { D, CATS, fmt, fmtShort, getYM, nowYM, ymFull, ymShort, MNS, donutSlicePath } from '@/lib/utils';
+import { CATS, fmt, fmtShort, getYM, nowYM, ymFull, ymShort, MNS, donutSlicePath } from '@/lib/utils';
+import { getTheme } from '@/lib/theme'
 
 /* ─── Donut Chart ─── */
 function DonutChart({ segments, size = 180 }) {
@@ -189,7 +190,8 @@ function Section({ title, icon, children }) {
 }
 
 /* ─── Analytics Page ─── */
-export default function Analytics({ txs }) {
+export default function Analytics({ txs, isDark }) {
+  const D = getTheme(isDark)
   const [month, setMonth] = useState(nowYM());
 
   const months = [...new Set([nowYM(), ...txs.map(t => getYM(t.date))])].sort((a,b) => b.localeCompare(a));

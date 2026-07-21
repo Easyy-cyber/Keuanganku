@@ -1,6 +1,7 @@
 'use client'
 import { useState } from "react";
-import { D, CATS, fmt, fmtShort, getYM, nowYM, ymFull, ymShort } from '@/lib/utils';
+import { CATS, fmt, fmtShort, getYM, nowYM, ymFull, ymShort } from '@/lib/utils';
+import { getTheme } from '@/lib/theme'
 
 /* Tipe logika budget per kategori */
 const BUDGET_TYPE = {
@@ -26,7 +27,7 @@ function getBudgetStatus(cat, actual, budget) {
 }
 
 /* ─── Budget Card ─── */
-function BudgetCard({ cat, actual, budget, onSetBudget }) {
+function BudgetCard({ cat, actual, budget, onSetBudget, D }) {
   const c       = CATS[cat];
   const type    = BUDGET_TYPE[cat];
   const isTarget = type === "target";
@@ -172,7 +173,8 @@ function BudgetCard({ cat, actual, budget, onSetBudget }) {
 }
 
 /* ─── Budget Page ─── */
-export default function Budget({ txs, budgets, saveBudget }) {
+export default function Budget({ txs, budgets, saveBudget, isDark }) {
+  const D = getTheme(isDark)
   const [month, setMonth] = useState(nowYM());
 
   const months   = [...new Set([nowYM(), ...txs.map(t => getYM(t.date))])].sort((a, b) => b.localeCompare(a));
@@ -264,7 +266,7 @@ export default function Budget({ txs, budgets, saveBudget }) {
 
         {/* Cards */}
         {Object.keys(CATS).map(cat => (
-          <BudgetCard key={cat} cat={cat} actual={getActual(cat)} budget={getBudget(cat)} onSetBudget={onSetBudget} />
+          <BudgetCard key={cat} cat={cat} actual={getActual(cat)} budget={getBudget(cat)} onSetBudget={onSetBudget} D={D} />
         ))}
 
         <div style={{ marginTop: 16, padding: "12px 16px", borderRadius: 12, background: D.surfaceUp, border: `1px solid ${D.border}` }}>

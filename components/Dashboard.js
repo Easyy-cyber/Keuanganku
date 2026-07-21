@@ -1,6 +1,7 @@
 'use client'
 import { useState } from "react";
-import { D, CATS, fmt, fmtShort, fmtDate, getYM, nowYM, ymFull, ymShort } from '@/lib/utils';
+import { CATS, fmt, fmtShort, fmtDate, getYM, nowYM, ymFull, ymShort } from '@/lib/utils';
+import { getTheme } from '@/lib/theme'
 
 /* ─── Bottom Sheet Form (Add & Edit) ─── */
 function TxForm({ initial = null, onSave, onCancel }) {
@@ -410,7 +411,8 @@ function NetWorthCard({ income, outcome, saving, asset }) {
 }
 
 /* ─── Dashboard Page ─── */
-export default function Dashboard({ txs, addTx, updateTx, deleteTx }) {
+export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
+  const D = getTheme(isDark)
   const [month,       setMonth]       = useState(nowYM());
   const [mode,        setMode]        = useState(null);   // null | "add" | "edit"
   const [editTx,      setEditTx]      = useState(null);
