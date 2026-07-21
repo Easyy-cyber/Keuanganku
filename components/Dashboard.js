@@ -4,7 +4,7 @@ import { CATS, fmt, fmtShort, fmtDate, getYM, nowYM, ymFull, ymShort } from '@/l
 import { getTheme } from '@/lib/theme'
 
 /* ─── Bottom Sheet Form (Add & Edit) ─── */
-function TxForm({ initial = null, onSave, onCancel }) {
+function TxForm({ initial = null, onSave, onCancel, D }) {
   const isEdit = !!initial;
   const [form, setForm] = useState({
     amount:      initial ? String(initial.amount) : "",
@@ -191,7 +191,7 @@ function TxForm({ initial = null, onSave, onCancel }) {
 }
 
 /* ─── Category Detail Panel ─── */
-function CategoryDetail({ cat, txs, month, onClose, onEdit, onDelete }) {
+function CategoryDetail({ cat, txs, month, onClose, onEdit, onDelete, D }) {
   const c        = CATS[cat];
   const filtered = txs.filter(t => t.category === cat && getYM(t.date) === month);
   const total    = filtered.reduce((s, t) => s + t.amount, 0);
@@ -275,7 +275,7 @@ function CategoryDetail({ cat, txs, month, onClose, onEdit, onDelete }) {
 }
 
 /* ─── Stat Card (clickable) ─── */
-function StatCard({ label, value, cat, active, onClick }) {
+function StatCard({ label, value, cat, active, onClick, D }) {
   const c = CATS[cat];
   return (
     <div onClick={onClick} style={{
@@ -301,7 +301,7 @@ function StatCard({ label, value, cat, active, onClick }) {
 }
 
 /* ─── Transaction Item (for history) ─── */
-function TxItem({ tx, onEdit, onDelete }) {
+function TxItem({ tx, onEdit, onDelete, D }) {
   const c = CATS[tx.category];
   const [hov, setHov] = useState(false);
   return (
@@ -338,7 +338,7 @@ function TxItem({ tx, onEdit, onDelete }) {
 }
 
 /* ─── Net Worth Card ─── */
-function NetWorthCard({ income, outcome, saving, asset }) {
+function NetWorthCard({ income, outcome, saving, asset, D }) {
   const saldo    = income - outcome;
   const netWorth = saldo + saving + asset;
   const isPos    = netWorth >= 0;
@@ -478,7 +478,7 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 16px 24px" }}>
 
         {/* Form */}
-        {mode && <TxForm initial={mode === "edit" ? editTx : null} onSave={handleSave} onCancel={closeForm} />}
+        {mode && <TxForm D = {D} initial={mode === "edit" ? editTx : null} onSave={handleSave} onCancel={closeForm} />}
 
         {/* Month Pills */}
         <div style={{ display: "flex", gap: 7, overflowX: "auto", paddingBottom: 4, marginBottom: 14, scrollbarWidth: "none" }}>
@@ -524,12 +524,12 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
           Klik kartu untuk lihat rincian transaksi
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
-          <StatCard label="Pemasukan"   value={income}  cat="income"  active={activeCat==="income"}  onClick={() => toggleCat("income")}  />
-          <StatCard label="Pengeluaran" value={outcome} cat="outcome" active={activeCat==="outcome"} onClick={() => toggleCat("outcome")} />
+          <StatCard label="Pemasukan"   value={income}  cat="income"  active={activeCat==="income"}  onClick={() => toggleCat("income")} D={D} />
+          <StatCard label="Pengeluaran" value={outcome} cat="outcome" active={activeCat==="outcome"} onClick={() => toggleCat("outcome")} D={D}/>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 6 }}>
-          <StatCard label="Tabungan" value={saving} cat="saving" active={activeCat==="saving"} onClick={() => toggleCat("saving")} />
-          <StatCard label="Aset"     value={asset}  cat="asset"  active={activeCat==="asset"}  onClick={() => toggleCat("asset")}  />
+          <StatCard label="Tabungan" value={saving} cat="saving" active={activeCat==="saving"} onClick={() => toggleCat("saving")} D={D} />
+          <StatCard label="Aset"     value={asset}  cat="asset"  active={activeCat==="asset"}  onClick={() => toggleCat("asset")}  D={D}/>
         </div>
         <p style={{ margin: "0 0 16px", fontSize: 11, color: D.textMuted, display: "flex", alignItems: "center", gap: 5 }}>
           <i className="ti ti-info-circle" style={{ fontSize: 11, color: D.saving.solid }} />
@@ -539,6 +539,7 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
         {/* Category Detail Panel */}
         {activeCat && (
           <CategoryDetail
+            D={D}
             cat={activeCat}
             txs={txs}
             month={month}
@@ -549,7 +550,7 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
         )}
 
         {/* Net Worth */}
-        <NetWorthCard income={allSum.income||0} outcome={allSum.outcome||0} saving={allSum.saving||0} asset={allSum.asset||0} />
+        <NetWorthCard D={D} income={allSum.income||0} outcome={allSum.outcome||0} saving={allSum.saving||0} asset={allSum.asset||0} />
 
         {/* Divider */}
         <div style={{ height: 1, background: D.border, margin: "4px 0 16px" }} />
@@ -591,7 +592,7 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {filtered.map(tx => (
-                  <TxItem key={tx.id} tx={tx} onEdit={openEdit} onDelete={deleteTx} />
+                  <TxItem key={tx.id} tx={tx} onEdit={openEdit} onDelete={deleteTx} D={D} />
                 ))}
               </div>
             )}

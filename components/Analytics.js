@@ -4,7 +4,7 @@ import { CATS, fmt, fmtShort, getYM, nowYM, ymFull, ymShort, MNS, donutSlicePath
 import { getTheme } from '@/lib/theme'
 
 /* ─── Donut Chart ─── */
-function DonutChart({ segments, size = 180 }) {
+function DonutChart({ segments, size = 180 , D}) {
   const cx = size / 2, cy = size / 2, outerR = 72, innerR = 48;
   const total = segments.reduce((s, d) => s + d.value, 0);
   const [hovered, setHovered] = useState(null);
@@ -62,7 +62,7 @@ function DonutChart({ segments, size = 180 }) {
 }
 
 /* ─── Bar Chart (Tren Bulanan) ─── */
-function BarChart({ monthlyData }) {
+function BarChart({ monthlyData, D }) {
   const [hovered, setHovered] = useState(null);
   const maxVal = Math.max(...monthlyData.flatMap(m => [m.income, m.outcome]), 1);
   const barH = 140, barW = 22, groupGap = 14, gap = 4;
@@ -177,7 +177,7 @@ function BarChart({ monthlyData }) {
 }
 
 /* ─── Section Card ─── */
-function Section({ title, icon, children }) {
+function Section({ title, icon, children, D }) {
   return (
     <div style={{ background:D.surfaceUp, borderRadius:18, padding:"18px 20px", border:`1.5px solid ${D.border}`, marginBottom:14 }}>
       <p style={{ margin:"0 0 16px", fontSize:14, fontWeight:800, color:D.textPri, display:"flex", alignItems:"center", gap:8 }}>
@@ -251,7 +251,7 @@ export default function Analytics({ txs, isDark }) {
         </div>
 
         {/* 1. Spending percentage */}
-        <Section title={`Ringkasan · ${ymFull(month)}`} icon="ti-report-analytics">
+        <Section title={`Ringkasan · ${ymFull(month)}`} icon="ti-report-analytics" D={D}>
           {income === 0 ? (
             <p style={{ margin:0, fontSize:13, color:D.textMuted, textAlign:"center", padding:"12px 0" }}>Belum ada pemasukan di bulan ini.</p>
           ) : (
@@ -305,7 +305,7 @@ export default function Analytics({ txs, isDark }) {
 
         {/* 2. Distribusi Donut */}
         <Section title="Distribusi per Kategori" icon="ti-chart-donut">
-          <DonutChart segments={donutData} size={180} />
+          <DonutChart segments={donutData} size={180} D={D} />
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginTop:16 }}>
             {Object.entries(CATS).map(([key,c]) => {
               const val = sum[key]||0;
@@ -326,7 +326,7 @@ export default function Analytics({ txs, isDark }) {
 
         {/* 3. Tren 6 Bulan */}
         <Section title="Tren 6 Bulan Terakhir" icon="ti-trending-up">
-          <BarChart monthlyData={last6} />
+          <BarChart monthlyData={last6} D={D} />
         </Section>
       </div>
     </div>

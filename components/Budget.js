@@ -11,7 +11,7 @@ const BUDGET_TYPE = {
   asset:   "target",
 };
 
-function getBudgetStatus(cat, actual, budget) {
+function getBudgetStatus(cat, actual, budget, D) {
   const type = BUDGET_TYPE[cat];
   const pct  = budget > 0 ? (actual / budget) * 100 : 0;
 
@@ -32,7 +32,7 @@ function BudgetCard({ cat, actual, budget, onSetBudget, D }) {
   const type    = BUDGET_TYPE[cat];
   const isTarget = type === "target";
   const pct     = budget > 0 ? Math.min((actual / budget) * 100, 100) : 0;
-  const status  = budget > 0 ? getBudgetStatus(cat, actual, budget) : null;
+  const status  = budget > 0 ? getBudgetStatus(cat, actual, budget, D) : null;
   const sisa    = budget - actual;
 
   const [editing, setEditing] = useState(false);
