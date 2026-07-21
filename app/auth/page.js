@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 const D = {
-  bg:       '#0D0F1A',
+  bg:       '#000000',
   surface:  '#131525',
   surfaceUp:'#1A1D30',
   surfaceHi:'#20243A',

@@ -4,7 +4,7 @@ import { CATS, fmt, fmtShort, fmtDate, getYM, nowYM, ymFull, ymShort } from '@/l
 import { getTheme } from '@/lib/theme'
 
 /* ─── Bottom Sheet Form (Add & Edit) ─── */
-function TxForm({ initial = null, onSave, onCancel, D }) {
+function TxForm({ initial = null, onSave, onCancel, D, isDark }) {
   const isEdit = !!initial;
   const [form, setForm] = useState({
     amount:      initial ? String(initial.amount) : "",
@@ -39,7 +39,7 @@ function TxForm({ initial = null, onSave, onCancel, D }) {
       {/* Sheet */}
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50,
-        background: "#161829",
+        background: isDark ? "#161829" : "#FFFFFF",
         borderRadius: "22px 22px 0 0",
         borderTop: `1.5px solid ${D.borderHi}`,
         borderLeft: `1.5px solid ${D.borderHi}`,
@@ -354,7 +354,9 @@ function NetWorthCard({ income, outcome, saving, asset, D }) {
 
   return (
     <div style={{ borderRadius: 20, overflow: "hidden", border: `1.5px solid ${isPos ? "#2A4A3A" : "#4A1A26"}`, boxShadow: `0 0 40px ${isPos ? D.income.glow : D.outcome.glow}`, marginBottom: 20 }}>
-      <div onClick={() => setOpen(v => !v)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 22px", cursor: "pointer", background: `linear-gradient(135deg, ${isPos ? "#0D2318" : "#1E0A10"} 0%, #131525 100%)` }}>
+      <div onClick={() => setOpen(v => !v)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 22px", cursor: "pointer", background: isDark
+  ? `linear-gradient(135deg, ${isPos ? "#0D2318" : "#1E0A10"} 0%, #131525 100%)`
+  : `linear-gradient(135deg, ${isPos ? "#ECFDF5" : "#FFF1F2"} 0%, #F0F2FF 100%)` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 42, height: 42, borderRadius: 13, background: isPos ? D.income.dim : D.outcome.dim, border: `1.5px solid ${isPos ? D.income.border : D.outcome.border}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${isPos ? D.income.glow : D.outcome.glow}` }}>
             <i className="ti ti-trophy" style={{ fontSize: 20, color: isPos ? D.income.solid : D.outcome.solid }} />
@@ -459,7 +461,7 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
   return (
     <div style={{ minHeight: "100vh", background: D.bg }}>
       {/* Top Bar */}
-      <div style={{ background: "rgba(13,15,26,0.9)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${D.border}`, padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 10 }}>
+      <div style={{ background: isDark ? "rgba(0,0,0,0.9)" : "rgba(245,245,245,0.9)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${D.border}`, padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: D.accentDim, border: `1px solid #3730A3`, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <i className="ti ti-wallet" style={{ fontSize: 18, color: D.accent }} />
@@ -478,7 +480,7 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 16px 24px" }}>
 
         {/* Form */}
-        {mode && <TxForm D = {D} initial={mode === "edit" ? editTx : null} onSave={handleSave} onCancel={closeForm} />}
+        {mode && <TxForm D = {D}  isDark={isDark} initial={mode === "edit" ? editTx : null} onSave={handleSave} onCancel={closeForm} />}
 
         {/* Month Pills */}
         <div style={{ display: "flex", gap: 7, overflowX: "auto", paddingBottom: 4, marginBottom: 14, scrollbarWidth: "none" }}>
@@ -493,7 +495,7 @@ export default function Dashboard({ txs, addTx, updateTx, deleteTx, isDark }) {
         </div>
 
         {/* Hero */}
-        <div style={{ borderRadius: 22, padding: "26px 24px", marginBottom: 14, background: `linear-gradient(135deg,#1A1D30 0%,#12142A 100%)`, border: `1.5px solid ${isPositive ? D.income.border : D.outcome.border}`, boxShadow: `0 0 40px ${isPositive ? D.income.glow : D.outcome.glow}`, position: "relative", overflow: "hidden" }}>
+        <div style={{ borderRadius: 22, padding: "26px 24px", marginBottom: 14, background: isDark ? `linear-gradient(135deg,#1A1D30 0%,#12142A 100%)` : `linear-gradient(135deg,#F0F2FF 0%,#E8EAFF 100%)`, border: `1.5px solid ${isPositive ? D.income.border : D.outcome.border}`, boxShadow: `0 0 40px ${isPositive ? D.income.glow : D.outcome.glow}`, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -40, right: -40, width: 160, height: 160, borderRadius: "50%", background: isPositive ? "rgba(52,211,153,0.04)" : "rgba(251,113,133,0.04)", pointerEvents: "none" }} />
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
             <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.08em" }}>Saldo bersih · {ymFull(month)}</p>

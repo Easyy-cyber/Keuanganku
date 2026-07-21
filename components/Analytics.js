@@ -304,7 +304,7 @@ export default function Analytics({ txs, isDark }) {
         </Section>
 
         {/* 2. Distribusi Donut */}
-        <Section title="Distribusi per Kategori" icon="ti-chart-donut">
+        <Section title="Distribusi per Kategori" icon="ti-chart-donut" D={D}>
           <DonutChart segments={donutData} size={180} D={D} />
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginTop:16 }}>
             {Object.entries(CATS).map(([key,c]) => {
@@ -325,7 +325,7 @@ export default function Analytics({ txs, isDark }) {
         </Section>
 
         {/* 3. Tren 6 Bulan */}
-        <Section title="Tren 6 Bulan Terakhir" icon="ti-trending-up">
+        <Section title="Tren 6 Bulan Terakhir" icon="ti-trending-up" D={D}>
           <BarChart monthlyData={last6} D={D} />
         </Section>
       </div>

@@ -204,7 +204,7 @@ export default function Budget({ txs, budgets, saveBudget, isDark }) {
   return (
     <div style={{ minHeight: "100vh", background: D.bg }}>
       {/* Header */}
-      <div style={{ background: "rgba(13,15,26,0.9)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${D.border}`, padding: "14px 20px", position: "sticky", top: 0, zIndex: 10 }}>
+      <div style={{ background: isDark ? "rgba(0,0,0,0.9)" : "rgba(245,245,245,0.9)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${D.border}`, padding: "14px 20px", position: "sticky", top: 0, zIndex: 10 }}>
         <h1 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: D.textPri, display: "flex", alignItems: "center", gap: 8 }}>
           <i className="ti ti-target" style={{ fontSize: 18, color: D.accent }} />Budget & Target
         </h1>
@@ -235,7 +235,9 @@ export default function Budget({ txs, budgets, saveBudget, isDark }) {
         {/* Summary */}
         {totalSet > 0 && (
           <div style={{
-            background: "linear-gradient(135deg, #0D1A14 0%, #131525 100%)",
+            background: isDark
+            ? "linear-gradient(135deg, #0D1A14 0%, #131525 100%)"
+            : "linear-gradient(135deg, #ECFDF5 0%, #F0F2FF 100%)",
             borderRadius: 18, padding: "18px 20px", marginBottom: 16,
             border: `1.5px solid ${totalGood === totalSet ? D.income.border : D.outcome.border}`,
             boxShadow: `0 0 28px ${totalGood === totalSet ? D.income.glow : D.outcome.glow}`,
