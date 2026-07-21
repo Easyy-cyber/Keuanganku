@@ -338,7 +338,7 @@ function TxItem({ tx, onEdit, onDelete, D }) {
 }
 
 /* ─── Net Worth Card ─── */
-function NetWorthCard({ income, outcome, saving, asset, D }) {
+function NetWorthCard({ income, outcome, saving, asset, D, isDark }) {
   const saldo    = income - outcome;
   const netWorth = saldo + saving + asset;
   const isPos    = netWorth >= 0;
@@ -354,9 +354,7 @@ function NetWorthCard({ income, outcome, saving, asset, D }) {
 
   return (
     <div style={{ borderRadius: 20, overflow: "hidden", border: `1.5px solid ${isPos ? "#2A4A3A" : "#4A1A26"}`, boxShadow: `0 0 40px ${isPos ? D.income.glow : D.outcome.glow}`, marginBottom: 20 }}>
-      <div onClick={() => setOpen(v => !v)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 22px", cursor: "pointer", background: isDark
-  ? `linear-gradient(135deg, ${isPos ? "#0D2318" : "#1E0A10"} 0%, #131525 100%)`
-  : `linear-gradient(135deg, ${isPos ? "#ECFDF5" : "#FFF1F2"} 0%, #F0F2FF 100%)` }}>
+      <div onClick={() => setOpen(v => !v)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 22px", cursor: "pointer", background: isDark ? `linear-gradient(135deg, ${isPos ? "#0D2318" : "#1E0A10"} 0%, #131525 100%)`: `linear-gradient(135deg, ${isPos ? "#ECFDF5" : "#FFF1F2"} 0%, #F0F2FF 100%)` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 42, height: 42, borderRadius: 13, background: isPos ? D.income.dim : D.outcome.dim, border: `1.5px solid ${isPos ? D.income.border : D.outcome.border}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 14px ${isPos ? D.income.glow : D.outcome.glow}` }}>
             <i className="ti ti-trophy" style={{ fontSize: 20, color: isPos ? D.income.solid : D.outcome.solid }} />
