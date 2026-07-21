@@ -38,7 +38,12 @@ async function apiFetch(path, method = 'GET', body = null) {
   return res.json()
 }
 
-function BottomNav({ page, setPage }) {
+function BottomNav({ page, setPage, isDark }) {
+  const bg      = isDark ? 'rgba(0,0,0,0.96)'      : 'rgba(245,245,245,0.96)'
+  const border  = isDark ? '#2A2A2A'                : '#DDDDDD'
+  const accent  = isDark ? '#818CF8'                : '#4F46E5'
+  const muted   = isDark ? '#444444'                : '#999999'
+
   const items = [
     { id: 'dashboard', icon: 'ti-home-2',    label: 'Beranda'    },
     { id: 'analytics', icon: 'ti-chart-bar', label: 'Analitik'   },
@@ -48,8 +53,8 @@ function BottomNav({ page, setPage }) {
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
-      background: 'rgba(13,15,26,0.96)', backdropFilter: 'blur(16px)',
-      borderTop: `1px solid ${D.border}`,
+      background: bg, backdropFilter: 'blur(16px)',
+      borderTop: `1px solid ${border}`,
       display: 'flex', padding: '10px 0 12px',
     }}>
       {items.map(item => {
@@ -58,11 +63,11 @@ function BottomNav({ page, setPage }) {
           <button key={item.id} onClick={() => setPage(item.id)} style={{
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
             background: 'none', border: 'none', padding: '4px 0', cursor: 'pointer',
-            color: active ? D.accent : D.textMuted, transition: 'color 0.15s',
+            color: active ? accent : muted, transition: 'color 0.15s',
           }}>
             <i className={`ti ${item.icon}`} style={{
               fontSize: 22,
-              filter: active ? `drop-shadow(0 0 6px ${D.accent})` : 'none',
+              filter: active ? `drop-shadow(0 0 6px ${accent})` : 'none',
               transition: 'filter 0.15s',
             }} />
             <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, letterSpacing: '0.02em' }}>
@@ -82,6 +87,7 @@ export default function DashboardPage() {
   const [budgets, setBudgets] = useState({})
   const [page,    setPage]    = useState('dashboard')
   const [loading, setLoading] = useState(true)
+  const [isDark,  setIsDark]  = useState(true)
   const hasFetched = useRef(false)  // ← kunci: hanya fetch sekali
 
   const loadData = useCallback(async () => {
@@ -102,7 +108,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { router.replace('/auth'); return }
+      if (!session) { router.push('/auth'); return }
       setUser(session.user)
       if (!hasFetched.current) {
         hasFetched.current = true
@@ -116,7 +122,7 @@ export default function DashboardPage() {
         setUser(session.user)
         loadData()
       }
-      if (!session) router.replace('/auth')
+      if (!session) router.push('/auth')
     })
 
     return () => subscription.unsubscribe()
@@ -187,31 +193,38 @@ export default function DashboardPage() {
     router.replace('/auth')
   }
 
+  const toggleTheme = () => {
+    setIsDark(v => !v)
+  }
+
+  const bgColor = isDark ? '#000000' : '#F5F5F5'
+
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: D.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 14, color: D.textMuted }}>
-      <i className="ti ti-loader-2" style={{ fontSize: 32, color: D.accent }} />
+    <div style={{ minHeight: '100vh', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 14, color: '#444' }}>
+      <i className="ti ti-loader-2" style={{ fontSize: 32, color: '#818CF8' }} />
       <span style={{ fontSize: 14 }}>Memuat data...</span>
     </div>
   )
 
-  const shared = { txs, budgets, addTx, updateTx, deleteTx, saveBudget }
+  const shared = { txs, budgets, addTx, updateTx, deleteTx, saveBudget, isDark }
 
   return (
-    <div style={{ background: D.bg, minHeight: '100vh', paddingBottom: 72 }}>
+    <div style={{ background: bgColor, minHeight: '100vh', paddingBottom: 72 }}>
       {page === 'dashboard' && <Dashboard {...shared} />}
-      {page === 'analytics' && <Analytics txs={txs} />}
+      {page === 'analytics' && <Analytics txs={txs} isDark={isDark} />}
       {page === 'budget'    && <Budget    {...shared} />}
       {page === 'settings'  && (
         <Settings
           txs={txs}
           budgets={budgets}
-          onRestore={handleRestore}
           onLogout={handleLogout}
           onDeleteAll={deleteAll}
           userEmail={user?.email}
+          isDark={isDark}
+          onToggleTheme={toggleTheme}
         />
       )}
-      <BottomNav page={page} setPage={setPage} />
+      <BottomNav page={page} setPage={setPage} isDark={isDark} />
     </div>
   )
 }
