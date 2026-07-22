@@ -197,11 +197,11 @@ export default function DashboardPage() {
     setIsDark(v => !v)
   }
 
-  const bgColor = isDark ? '#000000' : '#F5F5F5'
+  const bgColor = isDark ? '#000000' : '#F2F3F7'
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 14, color: '#444' }}>
-      <i className="ti ti-loader-2" style={{ fontSize: 32, color: '#818CF8' }} />
+    <div style={{ minHeight: '100vh', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 14, color: isDark ? '#444' : '#999' }}>
+      <i className="ti ti-loader-2" style={{ fontSize: 32, color: isDark ? '#6366F1' : '#4F46E5' }} />
       <span style={{ fontSize: 14 }}>Memuat data...</span>
     </div>
   )
